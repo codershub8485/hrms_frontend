@@ -39,6 +39,9 @@ const AttendanceView = ({ refreshTrigger }: AttendanceViewProps) => {
   const [error, setError] = useState('');
   const [employeesError, setEmployeesError] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
   const recordsPerPage = 10;
 
@@ -54,7 +57,7 @@ const AttendanceView = ({ refreshTrigger }: AttendanceViewProps) => {
     } else {
       fetchAllAttendance();
     }
-  }, [selectedEmployee, refreshTrigger]);
+  }, [selectedEmployee, refreshTrigger, startDate, endDate, statusFilter]);
 
   useEffect(() => {
     const indexOfLastRecord = currentPage * recordsPerPage;
@@ -84,7 +87,12 @@ const AttendanceView = ({ refreshTrigger }: AttendanceViewProps) => {
     setIsLoading(true);
     setError('');
     try {
-      const data = await attendanceApi.getAllAttendance();
+      const params: any = {};
+      if (startDate) params.start_date = startDate;
+      if (endDate) params.end_date = endDate;
+      if (statusFilter) params.status_filter = statusFilter;
+      
+      const data = await attendanceApi.getAllAttendance(params);
       setAllAttendanceRecords(data);
       setCurrentPage(1); // ✅ CRITICAL FIX
     } catch (err: any) {
@@ -99,7 +107,11 @@ const AttendanceView = ({ refreshTrigger }: AttendanceViewProps) => {
     setIsLoading(true);
     setError('');
     try {
-      const data = await attendanceApi.getAttendanceByEmployee(employeeId);
+      const params: any = {};
+      if (startDate) params.start_date = startDate;
+      if (endDate) params.end_date = endDate;
+      
+      const data = await attendanceApi.getAttendanceByEmployee(employeeId, params);
       setAllAttendanceRecords(data);
       setCurrentPage(1); // ✅ CRITICAL FIX
     } catch (err: any) {
@@ -117,6 +129,17 @@ const AttendanceView = ({ refreshTrigger }: AttendanceViewProps) => {
     setCurrentPage(1); // ✅ CRITICAL FIX
   };
 
+  const handleDateFilterChange = () => {
+    setCurrentPage(1);
+  };
+
+  const clearFilters = () => {
+    setStartDate('');
+    setEndDate('');
+    setStatusFilter('');
+    setCurrentPage(1);
+  };
+
   const formatDate = (dateString: string) =>
     new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -130,6 +153,14 @@ const AttendanceView = ({ refreshTrigger }: AttendanceViewProps) => {
       : 'bg-red-100 text-red-800 border-red-200';
 
   const totalPages = Math.ceil(allAttendanceRecords.length / recordsPerPage);
+
+  // Calculate present days per employee
+  const presentDaysByEmployee = allAttendanceRecords.reduce<Record<string, number>>((acc, record) => {
+    if (record.status === 'PRESENT') {
+      acc[record.employee_id] = (acc[record.employee_id] || 0) + 1;
+    }
+    return acc;
+  }, {});
 
   /* ===================== EMPLOYEE MAP ===================== */
 
@@ -161,13 +192,19 @@ const AttendanceView = ({ refreshTrigger }: AttendanceViewProps) => {
   return (
     <div className="bg-white shadow-xl rounded-xl border border-gray-200">
       <div className="px-8 py-6 bg-gradient-to-r from-green-50 to-emerald-50 border-b">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Attendance Records</h2>
-
+          <div className="bg-green-600 text-white px-4 py-2 rounded-full text-sm font-medium">
+            {allAttendanceRecords.length} Records
+          </div>
+        </div>
+        
+        {/* Filters */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <select
             value={selectedEmployee}
             onChange={handleEmployeeChange}
-            className="w-64 px-4 py-2 rounded-lg border-2 border-gray-200 bg-white text-sm"
+            className="px-4 py-2 rounded-lg border-2 border-gray-200 bg-white text-sm"
           >
             <option value="">All Employees</option>
             {employees.map(emp => (
@@ -176,7 +213,56 @@ const AttendanceView = ({ refreshTrigger }: AttendanceViewProps) => {
               </option>
             ))}
           </select>
+          
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => {
+              setStartDate(e.target.value);
+              handleDateFilterChange();
+            }}
+            placeholder="Start Date"
+            className="px-4 py-2 rounded-lg border-2 border-gray-200 bg-white text-sm"
+          />
+          
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => {
+              setEndDate(e.target.value);
+              handleDateFilterChange();
+            }}
+            placeholder="End Date"
+            className="px-4 py-2 rounded-lg border-2 border-gray-200 bg-white text-sm"
+          />
+          
+          <select
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              handleDateFilterChange();
+            }}
+            className="px-4 py-2 rounded-lg border-2 border-gray-200 bg-white text-sm"
+          >
+            <option value="">All Status</option>
+            <option value="Present">Present</option>
+            <option value="Absent">Absent</option>
+          </select>
         </div>
+        
+        {(startDate || endDate || statusFilter) && (
+          <div className="mt-4 flex justify-between items-center">
+            <div className="text-sm text-gray-600">
+              Active filters: {startDate && `From: ${startDate}`} {endDate && `To: ${endDate}`} {statusFilter && `Status: ${statusFilter}`}
+            </div>
+            <button
+              onClick={clearFilters}
+              className="px-3 py-1 text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+            >
+              Clear Filters
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="p-8">
@@ -216,6 +302,9 @@ const AttendanceView = ({ refreshTrigger }: AttendanceViewProps) => {
                     <th className="px-8 py-4 text-left text-xs font-semibold uppercase">
                       Status
                     </th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold uppercase">
+                      Present Days
+                    </th>
                   </tr>
                 </thead>
 
@@ -239,6 +328,11 @@ const AttendanceView = ({ refreshTrigger }: AttendanceViewProps) => {
                         >
                           {record.status}
                         </span>
+                      </td>
+                      <td className="px-8 py-4">
+                        <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium inline-block">
+                          {presentDaysByEmployee[record.employee_id] || 0} days
+                        </div>
                       </td>
                     </tr>
                   ))}

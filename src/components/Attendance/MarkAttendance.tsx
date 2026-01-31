@@ -230,7 +230,7 @@ const MarkAttendance = ({ onAttendanceMarked }: MarkAttendanceProps) => {
             type="date"
             name="attendance_date"
             value={formData.attendance_date}
-            max={new Date().toISOString().split('T')[0]}
+            max={new Date().toLocaleDateString('en-CA')}
             onChange={handleInputChange}
             className={`mt-1 w-full px-4 py-3 rounded-lg border-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent ${
               errors.attendance_date ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
