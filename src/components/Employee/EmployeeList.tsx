@@ -133,7 +133,7 @@ const EmployeeList = ({ refreshTrigger }: EmployeeListProps) => {
             </div>
           </div>
           <div className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium">
-            {employees.length} {employees.length === 1 ? 'Employee' : 'Employees'}
+            {allEmployees.length} {allEmployees.length === 1 ? 'Employee' : 'Employees'}
           </div>
         </div>
       </div>
