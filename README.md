@@ -1,73 +1,79 @@
-# React + TypeScript + Vite
+# HRMS Lite – Full Stack Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Project Overview
 
-Currently, two official plugins are available:
+HRMS Lite is a lightweight Human Resource Management System designed to manage basic HR operations such as **employee records** and **daily attendance tracking**.  
+The application is intended as a simple internal admin tool with a clean UI and production-ready backend APIs.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The system supports:
+- Employee creation, listing, and deletion
+- Daily attendance marking (Present / Absent)
+- Viewing attendance records per employee
 
-## React Compiler
+The focus of this project is on **clean architecture, proper validation, and end-to-end full-stack implementation**.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Frontend
+- React (Vite)
+- JavaScript
+- Axios
+- React Router DOM
+- HTML5 / CSS3
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Backend
+- Python
+- FastAPI
+- SQLAlchemy ORM
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Database
+- MySQL
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Deployment
+- Frontend: Railway
+- Backend:  Railway
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Live Application
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **Frontend URL:** `https://hrmsfrontend-production.up.railway.app`
+- **Backend API URL:** `https://hrmsbackend-production-1db5.up.railway.app`
+
+
+
+---
+
+## GitHub Repository
+
+- **Repository Link Frontend:** https://github.com/codershub8485/hrms_frontend.git
+- **Repository Link Backend:** https://github.com/codershub8485/hrms_backend.git
+---
+
+## Features
+
+### Employee Management
+- Add a new employee
+- View all employees
+- Delete an employee
+- Duplicate employee prevention
+- Email format validation
+
+### Attendance Management
+- Mark attendance (Present / Absent)
+- View attendance records per employee
+- Prevent attendance for invalid employees
+
+### UI/UX
+- Clean and professional layout
+- Loading, empty, and error states
+- Reusable UI components
+
+---
+
+## Steps to Run the Project Locally
+
+### 1. Clone the Repository
+
